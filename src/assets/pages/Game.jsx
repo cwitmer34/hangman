@@ -43,16 +43,30 @@ const Game = () => {
   const [guessesLeft, setGuessesLeft] = useState(11);
   const [movie, setMovie] = useState({});
   const [word, setWord] = useState(" ");
-  const [underlinedWord, setUnderlinedWord] = useState("");
+  const [blankWord, setBlankWord] = useState(" ");
+  const [splitBlankWord, setSplitBlankWord] = useState([]);
   const [guess, setGuess] = useState("guess");
   // *FIGURE OUT LATER: allow keypresses for guesses
   // const handleKeyPress = (e) => {
 
   // };
-  useEffect(() => {
-    setGuessesLeft(guessesLeft - 1);
-  }, [guess]);
+  const fillBlanks = (letter, word) => {
+    return word
+      .toLowerCase()
+      .split("")
+      .map((l, i) => {
+        if (letter === " ") return letter;
+        if (l === letter || l) return l;
+        return "_";
+      })
+      .join(" ");
+  };
 
+  useEffect(() => {
+    setBlankWord(fillBlanks(guess, word));
+    setGuessesLeft(guessesLeft - 1);
+    setSplitBlankWord(word.toLowerCase().split(""));
+  }, [guess, word, splitBlankWord]);
   // Virtual Keyboard
   const displayKeys = keys.map((key, i) => {
     const insertLineBreak = ["0", "p", "l"].indexOf(key) !== -1;
@@ -83,11 +97,13 @@ const Game = () => {
         { mode: "cors" }
       );
       const jsonData = await data.json();
-      if (jsonData.success === "false") fetchData();
+      if (jsonData.status_code == "34") {
+        fetchData();
+      } else {
+        setMovie(jsonData);
+        setWord(jsonData.title);
+      }
       console.log(jsonData);
-      setMovie(jsonData);
-      setWord(jsonData.title);
-      setUnderlinedWord("_ ".repeat(word.length - 1) + "_");
     };
     fetchData();
   }, []);
@@ -97,6 +113,7 @@ const Game = () => {
     <div className="container">
       <h1>hangman</h1>
       <p>{word}</p>
+      <p>{blankWord}</p>
       <p>{guessesLeft}</p>
       <p>{guess}</p>
       <div className="key-container">{displayKeys}</div>
