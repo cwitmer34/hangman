@@ -44,33 +44,28 @@ const Game = () => {
   const [movie, setMovie] = useState({});
   const [word, setWord] = useState(" ");
   const [blankWord, setBlankWord] = useState(" ");
-  const [splitBlankWord, setSplitBlankWord] = useState([]);
   const [guess, setGuess] = useState("guess");
   // *FIGURE OUT LATER: allow keypresses for guesses
   // const handleKeyPress = (e) => {
 
   // };
-  const fillBlanks = (letter, word) => {
-    return word
-      .toLowerCase()
-      .split("")
-      .map((l, i) => {
-        if (letter === " ") return letter;
-        if (l === letter || l) return l;
-        return "_";
-      })
-      .join(" ");
+  const handleGuess = (guesses) => {
+    // fill in logic, going to take all guesses and sort them into either correct or incorrect
+    // i will also change the underscores in the word to reflect the correct guesses
   };
 
   useEffect(() => {
-    setBlankWord(fillBlanks(guess, word));
     setGuessesLeft(guessesLeft - 1);
-    setSplitBlankWord(word.toLowerCase().split(""));
-  }, [guess, word, splitBlankWord]);
+    setBlankWord(handleGuess());
+  }, [guess]);
+
+  useEffect(() => {
+    setBlankWord(fillBlanks(guess, word));
+    console.log(splitBlankWord);
+  }, [word, splitBlankWord]);
   // Virtual Keyboard
   const displayKeys = keys.map((key, i) => {
     const insertLineBreak = ["0", "p", "l"].indexOf(key) !== -1;
-    console.log(key);
     if (insertLineBreak)
       return (
         <>
@@ -102,6 +97,7 @@ const Game = () => {
       } else {
         setMovie(jsonData);
         setWord(jsonData.title);
+        setSplitBlankWord(jsonData.title.toLowerCase().split(""));
       }
       console.log(jsonData);
     };
